@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primary">#2563EB</color>
+
+    <!-- 🔹 Variantes del primary -->
+    <color name="primary_dark">#1E40AF</color>
+    <color name="primary_light">#60A5FA</color>
+
+    <!-- 🌿 Estados -->
+    <color name="success">#22C55E</color>   <!-- Ingresos / OK -->
+    <color name="error">#EF4444</color>     <!-- Gastos / Error -->
+    <color name="warning">#F59E0B</color>   <!-- Alertas -->
+
+    <!-- 🖼️ Fondo -->
+    <color name="background">#F9FAFB</color>
+    <color name="surface">#FFFFFF</color>
+
+    <!-- 📝 Texto -->
+    <color name="text_primary">#111827</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="text_hint">#9CA3AF</color>
+
+    <!-- 🧱 Dividers / Bordes -->
+    <color name="divider">#E5E7EB</color>
+</resources>
