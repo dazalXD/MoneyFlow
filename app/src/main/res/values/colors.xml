@@ -24,4 +24,13 @@
 
     <!-- 🧱 Dividers / Bordes -->
     <color name="divider">#E5E7EB</color>
+
+    <color name="category_food">#FF7043</color>
+    <color name="category_transport">#42A5F5</color>
+    <color name="category_rent">#AB47BC</color>
+    <color name="category_entertainment">#26A69A</color>
+    <color name="category_health">#FFA726</color>
+    <color name="category_services">#78909C</color>
+    <color name="category_other">#78903C</color>
+
 </resources>

@@ -12,9 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary"
-        android:title="MiGasto"
-        android:titleTextColor="@color/surface"
-        app:popupTheme="@style/ThemeOverlay.Material3.Light" />
+        app:popupTheme="@style/ThemeOverlay.Material3.Light"
+        app:title="MoneyFlow"
+        app:titleTextColor="@color/white" />
 
     <!-- Contenido -->
     <LinearLayout
