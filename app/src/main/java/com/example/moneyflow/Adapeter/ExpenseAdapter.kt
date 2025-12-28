@@ -5,16 +5,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.moneyflow.Data.Expense
+import com.example.moneyflow.Data.entity.ExpenseEntity
 import com.example.moneyflow.R
 import com.example.moneyflow.utils.DateUtils
 
-class ExpenseAdapter : RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
+class ExpenseAdapter(
+    private val onLongClick: (ExpenseEntity) -> Unit,
+    private val onClick: (ExpenseEntity) -> Unit
+) : RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
 
-    private var list = listOf<Expense>()
+    private var list = listOf<ExpenseEntity>()
 
-    fun submitList(newList: List<Expense>) {
-        list = newList
+    fun submitList(newList: List<ExpenseEntity>?) {
+        list = newList ?: listOf()
         notifyDataSetChanged()
     }
 
@@ -41,10 +44,20 @@ class ExpenseAdapter : RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() 
             holder.itemView.context.getColor(expense.category.colorRes)
         )
 
-        // 📅 Fecha (simple por ahora)
+        // 📅 Fecha formateada
         holder.tvFecha.text = DateUtils.formatExpenseDate(expense.date)
-    }
 
+        // 👆 Long Click para eliminar
+        holder.itemView.setOnLongClickListener {
+            onLongClick(expense)
+            true
+        }
+
+        // 👇 Click para ver el detalle
+        holder.itemView.setOnClickListener {
+            onClick(expense)
+        }
+    }
 
     override fun getItemCount(): Int = list.size
 }

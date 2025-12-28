@@ -1,11 +1,10 @@
 package com.example.moneyflow
 
 import android.os.Bundle
+import android.text.InputFilter
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -20,12 +19,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.moneyflow.Adapeter.ExpenseAdapter
 import com.example.moneyflow.Data.CategoriaGasto
 import com.example.moneyflow.ViewModel.MainViewModel
+import com.example.moneyflow.ViewModel.MainViewModelFactory
 import com.example.moneyflow.utils.DialogHelper
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory((application as MoneyFlowApp).repository)
+    }
+
     private lateinit var rvGastos: RecyclerView
     private lateinit var tvTotal: TextView
     private lateinit var fabAdd: FloatingActionButton
@@ -46,17 +49,24 @@ class MainActivity : AppCompatActivity() {
         tvTotal = findViewById(R.id.tvTotal)
         fabAdd = findViewById(R.id.fabAdd)
 
-        // RecyclerView
-        adapter = ExpenseAdapter()
+        // RecyclerView con funcionalidad de click largo para eliminar
+        adapter = ExpenseAdapter(onLongClick = { expense ->
+            showDeleteConfirmation(expense)
+        }, onClick = { expense ->
+            showExpenseDetails(expense)
+        })
+
         rvGastos.layoutManager = LinearLayoutManager(this)
         rvGastos.adapter = adapter
 
         // Observar cambios en gastos
         viewModel.expenses.observe(this) { list ->
-            adapter.submitList(list.toList())
+            adapter.submitList(list)
         }
+
         viewModel.totalExpenses.observe(this) { total ->
-            tvTotal.text = "$${String.format("%.2f", total)}"
+            val displayTotal = total ?: 0.0
+            tvTotal.text = "$${String.format("%.2f", displayTotal)}"
         }
 
         // FAB para agregar gasto
@@ -70,31 +80,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showDeleteConfirmation(expense: com.example.moneyflow.Data.entity.ExpenseEntity) {
+        DialogHelper.showStandardAlert(
+            context = this,
+            title = "Eliminar gasto",
+            message = "¿Estás seguro de que deseas eliminar este gasto de $${expense.amount}?",
+            positiveButtonText = "Eliminar",
+            onPositiveClick = {
+                viewModel.deleteExpense(expense)
+                Toast.makeText(this, "Gasto eliminado", Toast.LENGTH_SHORT).show()
+            },
+            negativeButtonText = "Cancelar"
+        )
+    }
+
+    private fun showExpenseDetails(expense: com.example.moneyflow.Data.entity.ExpenseEntity) {
+        DialogHelper.showStandardAlert(
+            context = this, title = "Detalles del gasto", message = """
+                Categoría: ${expense.category.displayName}
+                Monto: $${expense.amount}
+                Nota: ${expense.note ?: "Sin nota"}
+                """.trimIndent(), positiveButtonText = "Cerrar"
+        )
+    }
+
     private fun showAddExpenseDialog() {
-        // Usamos un AlertDialog simple para ingresar gasto
         val builder = android.app.AlertDialog.Builder(this)
         builder.setTitle("Agregar Gasto")
 
         val layout = LinearLayout(this)
         layout.orientation = LinearLayout.VERTICAL
-        layout.setPadding(16, 16, 16, 16)
+        layout.setPadding(40, 20, 40, 20)
 
         val categorySpinner = Spinner(this)
         val categories = CategoriaGasto.values().map { it.displayName }
         categorySpinner.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            categories
+            this, android.R.layout.simple_spinner_dropdown_item, categories
         )
         layout.addView(categorySpinner)
-
-        val noteEdit = EditText(this)
-        noteEdit.hint = "Nota (opcional)"
-        layout.addView(noteEdit)
-
-//        val descEdit = EditText(this)
-//        descEdit.hint = "Descripción"
-//        layout.addView(descEdit)
 
         val amountEdit = EditText(this)
         amountEdit.hint = "Monto"
@@ -102,10 +125,17 @@ class MainActivity : AppCompatActivity() {
             android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
         layout.addView(amountEdit)
 
+        val maxLengh = 30
+        val noteEdit = EditText(this)
+        noteEdit.hint = "Nota (opcional)"
+        noteEdit.filters = arrayOf(InputFilter.LengthFilter(maxLengh))
+        layout.addView(noteEdit)
+
         builder.setView(layout)
 
         builder.setPositiveButton("Agregar") { _, _ ->
-            val amount = amountEdit.text.toString().toDoubleOrNull()
+            val amountStr = amountEdit.text.toString()
+            val amount = amountStr.toDoubleOrNull()
             val selectedCategory = CategoriaGasto.values()[categorySpinner.selectedItemPosition]
             val note = noteEdit.text.toString()
 
@@ -115,9 +145,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             viewModel.addExpense(
-                category = selectedCategory,
-                amount = amount,
-                note = note
+                category = selectedCategory, amount = amount, note = note
             )
         }
 

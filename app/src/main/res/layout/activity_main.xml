@@ -76,7 +76,7 @@
         android:layout_margin="24dp"
         android:contentDescription="Agregar gasto"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/primary"
+        app:backgroundTint="@color/primary_degradate"
         app:layout_anchor="@id/rvGastos"
         app:layout_anchorGravity="bottom|end"
         app:tint="@color/surface" />

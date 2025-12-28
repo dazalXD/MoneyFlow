@@ -1,40 +1,44 @@
 package com.example.moneyflow.ViewModel
 
 import androidx.lifecycle.ViewModel
-
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.moneyflow.Data.CategoriaGasto
-import com.example.moneyflow.Data.Expense
+import com.example.moneyflow.Data.entity.ExpenseEntity
+import com.example.moneyflow.Data.repository.ExpenseRepository
+import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
-    private val _expenses = MutableLiveData<MutableList<Expense>>(mutableListOf())
-    val expenses: LiveData<MutableList<Expense>> get() = _expenses
+class MainViewModel(
+    private val repository: ExpenseRepository
+) : ViewModel() {
 
-    private val _totalExpenses = MutableLiveData(0.0)
-    val totalExpenses: LiveData<Double> get() = _totalExpenses
+    val expenses = repository.getExpenses()
+        .asLiveData()
+
+    val totalExpenses = repository.getTotalExpenses()
+        .asLiveData()
+
     fun addExpense(
         category: CategoriaGasto,
         amount: Double,
         note: String?
     ) {
-        val expense = Expense(
-            id = 0,
-            category = category,
-            amount = amount,
-            note = note,
-            date = System.currentTimeMillis()
-        )
-
-        val currentList = _expenses.value ?: mutableListOf()
-        currentList.add(expense)
-        _expenses.value = currentList
-
-        updateTotal()
+        viewModelScope.launch {
+            repository.addExpense(
+                ExpenseEntity(
+                    id = 0,
+                    category = category,
+                    amount = amount,
+                    note = note,
+                    date = System.currentTimeMillis()
+                )
+            )
+        }
     }
 
-
-    private fun updateTotal() {
-        _totalExpenses.value = _expenses.value?.sumOf { it.amount } ?: 0.0
+    fun deleteExpense(expense: ExpenseEntity) {
+        viewModelScope.launch {
+            repository.deleteExpense(expense)
+        }
     }
 }

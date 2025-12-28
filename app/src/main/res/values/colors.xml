@@ -3,6 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#2563EB</color>
+    <color name="primary_degradate">#AD2563EB</color>
+
 
     <!-- 🔹 Variantes del primary -->
     <color name="primary_dark">#1E40AF</color>
