@@ -12,16 +12,12 @@ class MainViewModel(
     private val repository: ExpenseRepository
 ) : ViewModel() {
 
-    val expenses = repository.getExpenses()
-        .asLiveData()
+    val expenses = repository.getExpenses().asLiveData()
 
-    val totalExpenses = repository.getTotalExpenses()
-        .asLiveData()
+    val totalExpenses = repository.getTotalExpenses().asLiveData()
 
     fun addExpense(
-        category: CategoriaGasto,
-        amount: Double,
-        note: String?
+        category: CategoriaGasto, amount: Double, note: String?
     ) {
         viewModelScope.launch {
             repository.addExpense(

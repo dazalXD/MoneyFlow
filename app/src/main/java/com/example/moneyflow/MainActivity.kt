@@ -24,7 +24,6 @@ import com.example.moneyflow.utils.DialogHelper
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
-
     private val viewModel: MainViewModel by viewModels {
         MainViewModelFactory((application as MoneyFlowApp).repository)
     }
