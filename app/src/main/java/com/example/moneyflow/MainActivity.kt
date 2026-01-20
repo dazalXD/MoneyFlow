@@ -1,7 +1,9 @@
 package com.example.moneyflow
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.text.InputFilter
+import android.text.InputType
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -9,15 +11,18 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moneyflow.Adapeter.ExpenseAdapter
 import com.example.moneyflow.Data.CategoriaGasto
+import com.example.moneyflow.Data.entity.ExpenseEntity
 import com.example.moneyflow.ViewModel.MainViewModel
 import com.example.moneyflow.ViewModel.MainViewModelFactory
 import com.example.moneyflow.utils.DialogHelper
@@ -35,12 +40,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        WindowCompat.enableEdgeToEdge(window)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
         }
 
         // Views
@@ -66,6 +72,14 @@ class MainActivity : AppCompatActivity() {
         viewModel.totalExpenses.observe(this) { total ->
             val displayTotal = total ?: 0.0
             tvTotal.text = "$${String.format("%.2f", displayTotal)}"
+
+            // 🎨 Lógica de colores según el monto
+            val colorRes = when {
+                displayTotal >= 300.0 -> R.color.error   // Rojo
+                displayTotal >= 100.0 -> R.color.warning // Amarillo
+                else -> R.color.success                // Verde
+            }
+            tvTotal.setTextColor(ContextCompat.getColor(this, colorRes))
         }
 
         // FAB para agregar gasto
@@ -79,32 +93,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDeleteConfirmation(expense: com.example.moneyflow.Data.entity.ExpenseEntity) {
-        DialogHelper.showStandardAlert(
+    private fun showDeleteConfirmation(expense: ExpenseEntity) {
+        DialogHelper.showCustomDialog(
             context = this,
             title = "Eliminar gasto",
             message = "¿Estás seguro de que deseas eliminar este gasto de $${expense.amount}?",
             positiveButtonText = "Eliminar",
-            onPositiveClick = {
+            negativeButtonText = "Cancelar",
+            onAccept = {
                 viewModel.deleteExpense(expense)
                 Toast.makeText(this, "Gasto eliminado", Toast.LENGTH_SHORT).show()
             },
-            negativeButtonText = "Cancelar"
         )
     }
 
-    private fun showExpenseDetails(expense: com.example.moneyflow.Data.entity.ExpenseEntity) {
-        DialogHelper.showStandardAlert(
-            context = this, title = "Detalles del gasto", message = """
+    private fun showExpenseDetails(expense: ExpenseEntity) {
+        DialogHelper.showCustomDialog(
+            context = this,
+            title = "Detalles del gasto",
+            message = """
                 Categoría: ${expense.category.displayName}
-                Monto: $${expense.amount}
+                Monto: ${'$'}${expense.amount}
                 Nota: ${expense.note ?: "Sin nota"}
-                """.trimIndent(), positiveButtonText = "Cerrar"
+                """.trimIndent(),
+            positiveButtonText = "Cerrar",
+            negativeButtonText = null
         )
     }
 
     private fun showAddExpenseDialog() {
-        val builder = android.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setTitle("Agregar Gasto")
 
         val layout = LinearLayout(this)
@@ -112,6 +130,7 @@ class MainActivity : AppCompatActivity() {
         layout.setPadding(40, 20, 40, 20)
 
         val categorySpinner = Spinner(this)
+        categorySpinner.setPopupBackgroundResource(R.color.white)
         val categories = CategoriaGasto.values().map { it.displayName }
         categorySpinner.adapter = ArrayAdapter(
             this, android.R.layout.simple_spinner_dropdown_item, categories
@@ -120,8 +139,7 @@ class MainActivity : AppCompatActivity() {
 
         val amountEdit = EditText(this)
         amountEdit.hint = "Monto"
-        amountEdit.inputType =
-            android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+        amountEdit.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         layout.addView(amountEdit)
 
         val maxLengh = 30

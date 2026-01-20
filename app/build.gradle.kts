@@ -12,9 +12,8 @@ android {
         applicationId = "com.example.moneyflow"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-
+        versionCode = 2
+        versionName = "Nueva diseño"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -25,8 +24,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -34,6 +35,19 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    flavorDimensions += "primary"
+
+    productFlavors {
+        create("dev") {
+            dimension = "primary"
+            applicationId = "com.example.moneyflow.dev"
+        }
+        create("prod") {
+            dimension = "primary"
+        }
+    }
+
 }
 
 dependencies {
