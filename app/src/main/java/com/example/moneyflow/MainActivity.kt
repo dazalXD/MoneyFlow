@@ -1,9 +1,16 @@
 package com.example.moneyflow
 
+import android.Manifest
 import android.app.AlertDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -13,6 +20,8 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -38,10 +47,26 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fabAdd: FloatingActionButton
     private lateinit var adapter: ExpenseAdapter
 
+    val CHANEL_ID = "MoneyFlow"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         WindowCompat.enableEdgeToEdge(window)
+
+        // --- BLOQUE PARA PEDIR PERMISOS DE NOTIFICACIÓN ---
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    101 // Código de solicitud
+                )
+            }
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -109,15 +134,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun showExpenseDetails(expense: ExpenseEntity) {
         DialogHelper.showCustomDialog(
-            context = this,
-            title = "Detalles del gasto",
-            message = """
+            context = this, title = "Detalles del gasto", message = """
                 Categoría: ${expense.category.displayName}
                 Monto: ${'$'}${expense.amount}
                 Nota: ${expense.note ?: "Sin nota"}
-                """.trimIndent(),
-            positiveButtonText = "Cerrar",
-            negativeButtonText = null
+                """.trimIndent(), positiveButtonText = "Cerrar", negativeButtonText = null
         )
     }
 
@@ -164,6 +185,7 @@ class MainActivity : AppCompatActivity() {
             viewModel.addExpense(
                 category = selectedCategory, amount = amount, note = note
             )
+            lanzarNotificacion()
         }
 
         builder.setNegativeButton("Cancelar", null)
@@ -181,5 +203,32 @@ class MainActivity : AppCompatActivity() {
             },
             negativeButtonText = "No"
         )
+    }
+
+    fun lanzarNotificacion() {
+
+        Log.d("notificaciones", "enviando notificación")
+
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // ceal el canal (obligatorio en android 8.0+)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            val channel = NotificationChannel(
+                CHANEL_ID, "Notificaciones de Gastos", NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Avisa cuando se guarda un gasto"
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notificacion = NotificationCompat.Builder(this, CHANEL_ID)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle("MoneyFlow")
+            .setContentText("hasto guardado con exito")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        notificationManager.notify(1, notificacion.build())
     }
 }
