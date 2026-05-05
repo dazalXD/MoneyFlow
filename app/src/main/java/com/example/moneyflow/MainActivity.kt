@@ -209,26 +209,26 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("notificaciones", "enviando notificación")
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        // ceal el canal (obligatorio en android 8.0+)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            val channel = NotificationChannel(
-                CHANEL_ID, "Notificaciones de Gastos", NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = "Avisa cuando se guarda un gasto"
-            }
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val notificacion = NotificationCompat.Builder(this, CHANEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("MoneyFlow")
-            .setContentText("hasto guardado con exito")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-        notificationManager.notify(1, notificacion.build())
+//        val notificationManager =
+//            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//        // ceal el canal (obligatorio en android 8.0+)
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//
+//            val channel = NotificationChannel(
+//                CHANEL_ID, "Notificaciones de Gastos", NotificationManager.IMPORTANCE_DEFAULT
+//            ).apply {
+//                description = "Avisa cuando se guarda un gasto"
+//            }
+//            notificationManager.createNotificationChannel(channel)
+//        }
+//
+//        val notificacion = NotificationCompat.Builder(this, CHANEL_ID)
+//            .setSmallIcon(R.mipmap.ic_launcher)
+//            .setContentTitle("MoneyFlow")
+//            .setContentText("hasto guardado con exito")
+//            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//
+//        notificationManager.notify(1, notificacion.build())
     }
 }
