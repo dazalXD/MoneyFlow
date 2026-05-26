@@ -12,8 +12,8 @@ android {
         applicationId = "com.example.moneyflow"
         minSdk = 24
         targetSdk = 36
-        versionCode = 2
-        versionName = "Nueva diseño"
+        versionCode = 3
+        versionName = "dalete: notificaciónes push sin funcionalidad"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
