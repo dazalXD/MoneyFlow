@@ -22,7 +22,6 @@ class MainViewModel(
         viewModelScope.launch {
             repository.addExpense(
                 ExpenseEntity(
-                    id = 0,
                     category = category,
                     amount = amount,
                     note = note,
@@ -35,6 +34,12 @@ class MainViewModel(
     fun deleteExpense(expense: ExpenseEntity) {
         viewModelScope.launch {
             repository.deleteExpense(expense)
+        }
+    }
+
+    fun updateExpense(expense: ExpenseEntity) {
+        viewModelScope.launch {
+            repository.updateExpense(expense)
         }
     }
 }

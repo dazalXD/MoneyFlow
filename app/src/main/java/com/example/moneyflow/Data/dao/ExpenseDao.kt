@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.moneyflow.Data.entity.ExpenseEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -24,4 +25,7 @@ interface ExpenseDao {
     //obtener el total de gastos
     @Query("SELECT SUM(amount) FROM expenses")
     fun getTotalExpenses(): Flow<Double?>
+
+    @Update
+    suspend fun updateExpense(expense: ExpenseEntity)
 }

@@ -1,4 +1,4 @@
-package com.example.moneyflow.Adapeter
+package com.example.moneyflow.ui.adapeter
 
 import android.view.LayoutInflater
 import android.view.View

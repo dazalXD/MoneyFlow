@@ -4,6 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.moneyflow.Data.CategoriaGasto
 
+/**
+ * Tabla de gastos, entidad de los gastos.
+ * */
 @Entity(tableName = "expenses")
 data class ExpenseEntity(
     @PrimaryKey(autoGenerate = true)

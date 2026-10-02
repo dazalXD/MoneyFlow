@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_inicio">
+
+    <fragment
+        android:id="@+id/nav_inicio"
+        android:name="com.example.moneyflow.ui.fragment.HomeFragment"
+        tools:layout="@layout/fragment_home"
+        android:label="Inicio" /> <!-- El label saldrá en la Toolbar -->
+
+    <fragment
+        android:id="@+id/nav_estadistics"
+        android:name="com.example.moneyflow.ui.fragment.EstadisticsFragment"
+        tools:layout="@layout/fragment_estadistics"
+        android:label="estadisticas" /> <!-- El label saldrá en la Toolbar -->
+
+
+
+</navigation>

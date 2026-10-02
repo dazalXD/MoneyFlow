@@ -1,6 +1,7 @@
 package com.example.moneyflow
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.Room
 import com.example.moneyflow.Data.database.AppDatabase
 import com.example.moneyflow.Data.repository.ExpenseRepository

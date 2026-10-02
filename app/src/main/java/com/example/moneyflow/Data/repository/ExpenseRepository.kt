@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.map
 class ExpenseRepository(
     private val expenseDao: ExpenseDao
 ) {
-
+    // se definen las reglas de negocio que podemos trabajar.
     fun getExpenses() = expenseDao.getAllExpenses()
 
     // Usamos .map para manejar el valor dentro del Flow
@@ -20,5 +20,9 @@ class ExpenseRepository(
 
     suspend fun deleteExpense(expense: ExpenseEntity) {
         expenseDao.deleteExpense(expense)
+    }
+
+    suspend fun updateExpense(expense: ExpenseEntity) {
+        expenseDao.updateExpense(expense)
     }
 }
