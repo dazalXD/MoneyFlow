@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
 
+    implementation(libs.mpandroidchart)
+
     implementation(libs.androidx.work.runtime)
 
     implementation(libs.androidx.navigation.fragment.ktx)

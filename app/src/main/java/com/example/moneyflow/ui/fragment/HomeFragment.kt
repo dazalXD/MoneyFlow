@@ -31,7 +31,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlin.getValue
 
 class HomeFragment : Fragment() {
-
     private val viewModel: MainViewModel by viewModels {
         MainViewModelFactory((requireActivity().application as MoneyFlowApp).repository)
     }
@@ -65,13 +64,13 @@ class HomeFragment : Fragment() {
         }
 
         viewModel.totalExpenses.observe(viewLifecycleOwner) { total ->
-            val displayTotal = total ?: 0.0
-            tvTotal.text = "$${String.format("%.2f", displayTotal)}"
+            tvTotal.text = "$${String.format("%.2f", total)}"
+
 
             // 🎨 Lógica de colores según el monto
             val colorRes = when {
-                displayTotal >= 300.0 -> R.color.error   // Rojo
-                displayTotal >= 100.0 -> R.color.warning // Amarillo
+                total >= 300.0 -> R.color.error   // Rojo
+                total >= 100.0 -> R.color.warning // Amarillo
                 else -> R.color.success                // Verde
             }
             tvTotal.setTextColor(ContextCompat.getColor(requireActivity(), colorRes))
@@ -128,7 +127,8 @@ class HomeFragment : Fragment() {
 
             if (amount == null) {
                 Toast.makeText(
-                    requireActivity(), "Ingresa un monto válido", Toast.LENGTH_SHORT).show()
+                    requireActivity(), "Ingresa un monto válido", Toast.LENGTH_SHORT
+                ).show()
                 return@setPositiveButton
             }
 
@@ -214,7 +214,8 @@ class HomeFragment : Fragment() {
             val note = noteEdit.text.toString()
 
             if (amount == null) {
-                Toast.makeText(requireActivity(), "Ingresa un monto válido", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "Ingresa un monto válido", Toast.LENGTH_SHORT)
+                    .show()
                 return@setPositiveButton
             }
 
