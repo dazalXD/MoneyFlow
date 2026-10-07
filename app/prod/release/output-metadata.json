@@ -11,8 +11,8 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 2,
-      "versionName": "Nueva diseño",
+      "versionCode": 4,
+      "versionName": "Update: estadisticas y funciones de edición",
       "outputFile": "app-prod-release.apk"
     }
   ],

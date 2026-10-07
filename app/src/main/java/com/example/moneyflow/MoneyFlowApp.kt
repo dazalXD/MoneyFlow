@@ -1,22 +1,23 @@
 package com.example.moneyflow
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.Room
 import com.example.moneyflow.Data.database.AppDatabase
 import com.example.moneyflow.Data.repository.ExpenseRepository
 
 class MoneyFlowApp : Application() {
 
-    private val database by lazy {
+    val database: AppDatabase by lazy {
         Room.databaseBuilder(
             this,
             AppDatabase::class.java,
             "money_flow_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(false)
+            .build()
     }
 
-    val repository by lazy {
-        ExpenseRepository(database.expenseDao())
+    val repository: ExpenseRepository by lazy {
+        ExpenseRepository(database.expenseDao(), database.categoryDao())
     }
 }

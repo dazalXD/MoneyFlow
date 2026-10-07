@@ -1,22 +1,23 @@
 package com.example.moneyflow.ui.adapeter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.moneyflow.Data.entity.ExpenseEntity
+import com.example.moneyflow.Data.entity.ExpenseWithCategory
 import com.example.moneyflow.R
 import com.example.moneyflow.utils.DateUtils
 
 class ExpenseAdapter(
-    private val onLongClick: (ExpenseEntity) -> Unit,
-    private val onClick: (ExpenseEntity) -> Unit
+    private val onLongClick: (ExpenseWithCategory) -> Unit,
+    private val onClick: (ExpenseWithCategory) -> Unit
 ) : RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
 
-    private var list = listOf<ExpenseEntity>()
+    private var list = listOf<ExpenseWithCategory>()
 
-    fun submitList(newList: List<ExpenseEntity>?) {
+    fun submitList(newList: List<ExpenseWithCategory>?) {
         list = newList ?: listOf()
         notifyDataSetChanged()
     }
@@ -34,28 +35,33 @@ class ExpenseAdapter(
     }
 
     override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
-        val expense = list[position]
+        val item = list[position]
+        val expense = item.expense
+        val category = item.category
 
-        holder.tvCategoria.text = expense.category.displayName
+        holder.tvCategoria.text = category.name
         holder.tvMonto.text = "$${String.format("%.2f", expense.amount)}"
 
-        // 🎨 Color por categoría
-        holder.viewCategoryColor.setBackgroundColor(
-            holder.itemView.context.getColor(expense.category.colorRes)
-        )
+        // 🎨 Color dinámico desde Hex
+        val categoryColor = try {
+            Color.parseColor(category.colorHex)
+        } catch (e: Exception) {
+            Color.GRAY
+        }
+        holder.viewCategoryColor.setBackgroundColor(categoryColor)
 
         // 📅 Fecha formateada
         holder.tvFecha.text = DateUtils.formatExpenseDate(expense.date)
 
         // 👆 Long Click para eliminar
         holder.itemView.setOnLongClickListener {
-            onLongClick(expense)
+            onLongClick(item)
             true
         }
 
         // 👇 Click para ver el detalle
         holder.itemView.setOnClickListener {
-            onClick(expense)
+            onClick(item)
         }
     }
 
